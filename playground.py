@@ -3,11 +3,13 @@ from phi.model.groq import Groq
 from phi.tools.yfinance import YFinanceTools
 from phi.tools.duckduckgo import DuckDuckGo 
 from dotenv import load_dotenv
+import os 
+import phi 
 
+from phi.playground import Playground, serve_playground_app
 load_dotenv()
 
-# Set your Groq API key
-
+phi.api = os.getenv("PHI_API_KEY")
 
 # Web search agent
 web_search_agent = Agent(
@@ -36,16 +38,8 @@ financial_agent = Agent(
     markdown=True,
 )
 
-# Multi-agent coordinator
-multi_ai_agents = Agent(
-    team=[web_search_agent, financial_agent],
-    model=Groq(id="llama-3.1-8b-instant"),  # Add model to coordinator
-    instructions=["Collaborate to provide accurate and comprehensive information"],
-    show_tool_calls=True,
-    markdown=True,
-)
+app = Playground(agents = [financial_agent, web_search_agent]).get_app()
+if __name__ == "__main__":
+    serve_playground_app("playground:app", reload=True)
 
-multi_ai_agents.print_response(
-    "Supply a detailed analysis of Apple's (AAPL) current stock performance including recent news, stock price trends, and analyst recommendations.", 
-    stream=True
-)
+

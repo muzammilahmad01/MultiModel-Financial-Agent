@@ -7,3 +7,4 @@ uvicorn
 groq
 openai
 dotenv
+python_multipart
